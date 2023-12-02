@@ -56,3 +56,7 @@ common day
                       , containers
     hs-source-dirs:     execs
     default-language:   GHC2021
+
+executable Day01
+    import:             day
+    main-is:            Day01.hs
