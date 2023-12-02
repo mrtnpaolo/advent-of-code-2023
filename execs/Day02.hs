@@ -1,21 +1,19 @@
 module Main (main) where
 
 import Advent          (getInputLines)
-import Data.List.Split (splitOn)
+import Data.List.Split (splitOneOf, splitOn)
 import Data.Map.Strict (fromListWith, (!))
 
 main =
   do inp <- getInputLines parse 2
      print (part1 inp)
      print (part2 inp)
+
+parse xs = (game_id,maximums)
   where
-    parse xs = (n,m)
-      where
-        [ words -> ["Game", read @Int -> n],
-          concatMap (map words . splitOn ", ") . splitOn "; " -> gs]
-          = splitOn ": " xs
-        m = fromListWith max [(color,amount) | [read @Int -> amount,color] <- gs]
+    [words -> ["Game", read @Int -> game_id], splitOneOf ";," -> gs] = splitOn ": " xs
+    maximums = fromListWith max [(color,amount) | (words -> [read @Int -> amount,color]) <- gs]
 
-part1 xs = sum [ n | (n,m) <- xs, m!"red" <= 12 && m!"green" <= 13 && m!"blue" <= 14 ]
+part1 xs = sum [ game_id | (game_id,ms) <- xs, ms!"red" <= 12, ms!"green" <= 13, ms!"blue" <= 14 ]
 
-part2 xs = sum [ m!"red" * m!"green" * m!"blue" | (_,m) <- xs ]
+part2 xs = sum [ product ms | (_,ms) <- xs ]
