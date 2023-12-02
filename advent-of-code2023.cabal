@@ -1,0 +1,58 @@
+cabal-version:      3.0
+name:               advent-of-code2023
+version:            0.0.0.0
+synopsis:           https://adventofcode.com/2023
+description:        Advent of Code 2023 solutions
+homepage:           https://github.com/mrtnpaolo/advent-of-code-2023
+license:            MIT
+license-file:       LICENSE
+author:             Paolo Martini
+maintainer:         mrtnpaolo@protonmail.com
+copyright:          2023 Paolo Martini
+bug-reports:        https://github.com/mrtnpaolo/advent-of-code-2023/issues
+build-type:         Simple
+data-files:         inputs/*
+
+common warnings
+    ghc-options: -Wall
+                 -Wno-unused-imports
+                 -Wno-incomplete-patterns
+                 -Wno-missing-signatures
+
+common extensions
+    default-extensions: PartialTypeSignatures
+                        ImportQualifiedPost
+                        TypeApplications
+                        PatternSynonyms
+                        ViewPatterns
+                        BlockArguments
+                        LambdaCase
+                        RecordWildCards
+                        ParallelListComp
+
+library
+    import:             extensions
+    exposed-modules:    Advent
+                      , Advent.Coord
+                      , Advent.Input
+                      , Advent.Search
+                      , Advent.Chinese
+                      , Advent.List
+    other-modules:      Advent.Deque
+                      , Advent.PQueue
+    build-depends:      base
+                      , array
+                      , containers
+    hs-source-dirs:     common
+    default-language:   GHC2021
+
+common day
+    import:             warnings
+    import:             extensions
+    build-depends:      advent-of-code2023
+                      , base
+                      , array
+                      , split
+                      , containers
+    hs-source-dirs:     execs
+    default-language:   GHC2021
