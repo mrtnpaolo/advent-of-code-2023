@@ -80,6 +80,21 @@ boundingBox t =
       go xm ym xM yM (C y x : cs) =
         go (min xm x) (min ym y) (max xM x) (max yM y) cs
 
+frame :: Foldable t => t Coord -> [Coord]
+frame t =
+  case toList t of
+    [] -> error "no coords to take the frame of"
+    cs -> takeWhile (b /=) (iterate right a)
+       ++ takeWhile (d /=) (iterate below b)
+       ++ takeWhile (c /=) (iterate left c)
+       ++ takeWhile (a /=) (iterate above c)
+      where
+        (cm@(C ym xm),cM@(C yM xM)) = (minimum cs,maximum cs)
+        a = above (left cm)
+        b = above (right (C ym xM))
+        c = below (left (C yM xm))
+        d = below (right cM)
+
 drawCoords :: Map Coord Char -> String
 drawCoords pixels =
   unlines [ [ pixel (C y x) | x <- [xm..xM]] | y <- [ym..yM] ]
