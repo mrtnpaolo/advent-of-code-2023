@@ -2,6 +2,7 @@ module Advent.Input
   ( getInput
   , getInputLines
   , getInputArray
+  , getInputMap
   ) where
 
 import Advent.Coord
@@ -9,6 +10,7 @@ import Advent.Coord
 import System.Environment (getArgs)
 import Text.Printf (printf)
 import Data.Array.Unboxed qualified as A
+import Data.Map.Strict qualified as M
 
 getInput :: (String -> a) -> Int -> IO a
 getInput parse day =
@@ -30,3 +32,6 @@ getInputArray day = makeArray <$> getInputLines id day
           height = length rows
           width  = length (head rows)
           bounds = ( origin, C (height-1) (width-1) )
+
+getInputMap :: Int -> IO (M.Map Coord Char)
+getInputMap = getInput (M.fromList . withCoords id . lines)
