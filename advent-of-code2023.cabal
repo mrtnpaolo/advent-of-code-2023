@@ -17,7 +17,9 @@ common warnings
     ghc-options: -Wall
                  -Wno-unused-imports
                  -Wno-incomplete-patterns
+                 -Wno-incomplete-uni-patterns
                  -Wno-missing-signatures
+                 -Wno-type-defaults
 
 common extensions
     default-extensions: PartialTypeSignatures
