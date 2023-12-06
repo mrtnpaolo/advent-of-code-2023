@@ -1,18 +1,19 @@
 module Main (main) where
 
-import Advent    (getInput,count)
+import Advent    (getInputLines,count)
 import Data.List (transpose)
 
 main =
-  do inp <- getInput parse 6
+  do inp <- getInputLines (tail . words) 6
      print (part1 (parse1 inp))
      print (part2 (parse2 inp))
   where
-    parse  = map (tail . words) . lines
-    parse1 = transpose . map (map (read @Int))
-    parse2 =             map (read @Int . concat)
+    parse1 = transpose . map (map (read @Float))
+    parse2 =             map (read @Float . concat)
 
-wins [tot,len] = count (> len) [ i*t | i <- [1..tot-1], let t = tot-i ]
+wins [ms,mm] = floor ((ms + δ) / 2) - ceiling ((ms - δ) / 2) + 1
+  where
+    δ = sqrt (ms^2 - 4*mm - 2)
 
 part1 = product . map wins
 
