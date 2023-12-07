@@ -1,7 +1,7 @@
 module Main (main) where
 
 import Advent     (getInputLines)
-import Data.List  (sortOn,sort,group,elemIndex)
+import Data.List  (sortOn,sort,group,elemIndex,nub)
 import Data.Maybe (mapMaybe)
 
 main =
@@ -23,7 +23,6 @@ value cards = mapMaybe (`elemIndex` cards)
 
 part2 = winnings . sortOn (\(hand,_) -> jokers hand : value "J23456789TQKA" hand)
 
-jokers "JJJJJ" = 6
 jokers hand = maximum [ classify (map replace hand)
-                      | card <- filter (/= 'J') hand
+                      | card <- nub hand
                       , let replace = \case 'J' -> card; x -> x ]
