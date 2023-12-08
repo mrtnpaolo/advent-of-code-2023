@@ -1,50 +1,25 @@
-{-# OPTIONS_GHC -Wno-name-shadowing #-}
 module Main (main) where
 
-import Advent
-import Numeric
-import Data.Ix
-import Data.Ord
-import Data.Char
-import Data.Maybe
-import Data.Either
-import Data.List          qualified as L
-import Data.List.Split    qualified as L
-import Data.Set           qualified as S
-import Data.Map.Strict    qualified as M
-import Data.IntSet        qualified as IS
-import Data.IntMap.Strict qualified as IM
-import Data.Array.Unboxed qualified as A
-import Debug.Trace
+import Advent          (getInput)
+import Data.List       (foldl1)
+import Data.List.Split (chunksOf)
+import Data.Map.Strict (fromList,(!),keys)
 
 main =
-  do inp <- getInput parse 8
-     print (part2 inp)
+  do (len,m) <- getInput (navigate . parse . map clean) 8
+     print (part1 len)
+     print (part2 len m)
   where
-    clean = map \case c | c `elem` "=(,)" -> ' ' | otherwise -> c
-    f (words . clean -> [from,l,r]) = (from,(l,r))
-    parse inp = (dirs,M.fromList g)
-      where
-        (dirs:_:(map f -> g)) = lines inp
+    clean c | c `elem` "=(,)" = ' ' | otherwise = c
+    parse (words -> (dirs:(chunksOf 3 -> maps))) =
+      (cycle dirs,fromList [(from,(l,r))| [from,l,r] <- maps])
 
-move 'L' = fst
-move 'R' = snd
-
-{-
-part1 (dirs,g) = length $ go "AAA" (cycle dirs)
+navigate (dirs,m) = (len 0 dirs,m)
   where
-    go "ZZZ" _ = []
-    go node  (dir:nexts) = node : go node' nexts
-      where
-        node' = move dir (g M.! node)
--}
+    move 'L' = fst; move 'R' = snd
+    len n (d:ds) end node | end node  = n
+                          | otherwise = len (n+1) ds end (move d (m ! node))
 
-part2 (dirs,g) = L.foldl1 lcm $ map (length . go (cycle dirs)) starts
-  where
-    starts = [ node | node <- M.keys g, last node == 'A' ]
+part1 len = len ("ZZZ"==) "AAA"
 
-    go (dir:nexts) node
-      | last node == 'Z' = []
-      | otherwise        = node : go nexts node'
-      where
-        node' = move dir (g M.! node)
+part2 len m = foldl1 lcm [len (('Z'==) . last) node | node@[_,_,'A'] <- keys m]
