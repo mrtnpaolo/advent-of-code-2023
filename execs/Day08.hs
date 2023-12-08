@@ -19,7 +19,6 @@ import Debug.Trace
 
 main =
   do inp <- getInput parse 8
-     print (part1 inp)
      print (part2 inp)
   where
     clean = map \case c | c `elem` "=(,)" -> ' ' | otherwise -> c
@@ -31,11 +30,21 @@ main =
 move 'L' = fst
 move 'R' = snd
 
+{-
 part1 (dirs,g) = length $ go "AAA" (cycle dirs)
   where
     go "ZZZ" _ = []
     go node  (dir:nexts) = node : go node' nexts
       where
         node' = move dir (g M.! node)
+-}
 
-part2 = const ()
+part2 (dirs,g) = L.foldl1 lcm $ map (length . go (cycle dirs)) starts
+  where
+    starts = [ node | node <- M.keys g, last node == 'A' ]
+
+    go (dir:nexts) node
+      | last node == 'Z' = []
+      | otherwise        = node : go nexts node'
+      where
+        node' = move dir (g M.! node)
