@@ -1,25 +1,26 @@
 module Main (main) where
 
 import Advent          (getInput)
-import Data.List       (foldl1)
+import Data.List       (foldl1')
 import Data.List.Split (chunksOf)
 import Data.Map.Strict (fromList,(!),keys)
 
 main =
-  do (len,m) <- getInput (navigate . parse . map clean) 8
-     print (part1 len)
-     print (part2 len m)
+  do (steps,m) <- getInput (go . parse) 8
+     print (part1 steps)
+     print (part2 steps m)
   where
     clean c | c `elem` "=(,)" = ' ' | otherwise = c
-    parse (words -> (dirs:(chunksOf 3 -> maps))) =
-      (cycle dirs,fromList [(from,(l,r))| [from,l,r] <- maps])
+    parse (words . map clean -> (dirs:(chunksOf 3 -> nodes))) =
+      (dirs,fromList [(n,(l,r))| [n,l,r] <- nodes])
 
-navigate (dirs,m) = (len 0 dirs,m)
+go (dirs,m) = (steps 0 (cycle dirs),m)
   where
-    move 'L' = fst; move 'R' = snd
-    len n (d:ds) end node | end node  = n
-                          | otherwise = len (n+1) ds end (move d (m ! node))
+    move 'L' = fst
+    move 'R' = snd
+    steps n _      [_,_,'Z'] = n
+    steps n (d:ds) node      = steps (n+1) ds (move d (m ! node))
 
-part1 len = len ("ZZZ"==) "AAA"
+part1 steps = steps "AAA"
 
-part2 len m = foldl1 lcm [len (('Z'==) . last) node | node@[_,_,'A'] <- keys m]
+part2 steps m = foldl1' lcm [steps node | node@[_,_,'A'] <- keys m]
