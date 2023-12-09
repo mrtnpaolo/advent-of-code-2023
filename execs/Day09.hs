@@ -30,4 +30,19 @@ f xs = sum (map last yss)
   where
     yss = takeWhile (not . all (0==)) . iterate diffs $ xs
 
-part2 = const ()
+part2 = sum . map g
+
+g xs = last (go y ys)
+  where
+    yss = takeWhile (not . all (0==)) . iterate diffs $ xs
+    y:ys = reverse (map head yss)
+    go _ [] = []
+    go n [x] = [x-n]
+    go n (x:xs) = (x-n) : go (x-n) xs
+
+-- 10 3 0 2
+-- 2 0 3 10
+-- 2 0-2
+--   -2 3--2
+--       5   10-5
+--             5
