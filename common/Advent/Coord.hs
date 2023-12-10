@@ -1,4 +1,17 @@
-module Advent.Coord where
+module Advent.Coord
+  ( Coord(..,O,N,E,S,W)
+  , origin, north, east, south, west
+  , coordRow, coordCol
+  , invert
+  , above, right, below, left
+  , turnLeft, turnRight, turnAround
+  , cardinal, neighbors, bookreading
+  , manhattan
+  , addCoord, scaleCoord
+  , boundingBox, frame
+  , drawCoords, showCoords, drawCoords', showCoordsWith, showCoordsWith'
+  , withCoords
+  ) where
 
 import Data.Ix
 import GHC.Arr
@@ -17,12 +30,12 @@ east   = C 0 1
 south  = C 1 0
 west   = C 0 (-1)
 
-pattern Origin, North, East, South, West :: Coord
-pattern Origin = C 0 0
-pattern North  = C (-1) 0
-pattern East   = C 0 1
-pattern South  = C 1 0
-pattern West   = C 0 (-1)
+pattern O, N, E, S, W :: Coord
+pattern O = C 0 0
+pattern N = C (-1) 0
+pattern E = C 0 1
+pattern S = C 1 0
+pattern W = C 0 (-1)
 
 coordRow, coordCol :: Coord -> Int
 coordRow (C row _) = row
