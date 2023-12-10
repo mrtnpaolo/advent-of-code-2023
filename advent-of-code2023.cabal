@@ -21,6 +21,7 @@ common warnings
                  -Wno-missing-signatures
                  -Wno-type-defaults
                  -Wno-x-partial
+                 -Wno-name-shadowing
 
 common extensions
     default-extensions: PartialTypeSignatures
@@ -34,6 +35,7 @@ common extensions
                         ParallelListComp
 
 library
+    import:             warnings
     import:             extensions
     exposed-modules:    Advent
                       , Advent.Coord

@@ -17,6 +17,13 @@ east   = C 0 1
 south  = C 1 0
 west   = C 0 (-1)
 
+pattern Origin, North, East, South, West :: Coord
+pattern Origin = C 0 0
+pattern North  = C (-1) 0
+pattern East   = C 0 1
+pattern South  = C 1 0
+pattern West   = C 0 (-1)
+
 coordRow, coordCol :: Coord -> Int
 coordRow (C row _) = row
 coordCol (C _ col) = col
@@ -114,6 +121,9 @@ drawCoords' wide pixels =
 
 showCoordsWith :: Int -> (a -> String) -> [(Coord,a)] -> String
 showCoordsWith wide f t = drawCoords' wide $ M.fromList [ (c,f x) | (c,x) <- t ]
+
+showCoordsWith' :: Int -> (Coord -> a -> String) -> [(Coord,a)] -> String
+showCoordsWith' wide f t = drawCoords' wide $ M.fromList [ (c,f c x) | (c,x) <- t ]
 
 withCoords :: (Char -> a) -> [String] -> [(Coord,a)]
 withCoords f rows = concat $
