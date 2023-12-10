@@ -1,0 +1,94 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[      2914,         86]
+NotebookOptionsPosition[      2319,         67]
+NotebookOutlinePosition[      2744,         84]
+CellTagsIndexPosition[      2701,         81]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{"inp", " ", ":=", 
+  RowBox[{"Import", "[", 
+   RowBox[{
+    RowBox[{"FileNameJoin", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"NotebookDirectory", "[", "]"}], ",", "\"\<..\>\"", ",", 
+       "\"\<inputs\>\"", ",", "\"\<input-09.txt\>\""}], "}"}], "]"}], ",", 
+    "\"\<Table\>\""}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.911210831576899*^9, 3.9112108534617662`*^9}, {
+  3.911210929942196*^9, 3.911210953049337*^9}, {3.911211013881585*^9, 
+  3.9112110386745157`*^9}},
+ CellLabel->"In[1]:=",ExpressionUUID->"933247bb-594d-419d-8999-65dce089f4d6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Total", "/@", 
+  RowBox[{"Transpose", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{"InterpolatingPolynomial", "[", 
+       RowBox[{"#", ",", "x"}], "]"}], "/.", 
+      RowBox[{"x", "->", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Length", "[", "#", "]"}], "+", "1"}], ",", "0"}], 
+        "}"}]}]}], "&"}], "/@", "inp"}], "]"}]}]], "Input",
+ CellChangeTimes->{{3.911211142510806*^9, 3.911211159711438*^9}, {
+  3.91121126234345*^9, 3.911211352958111*^9}, {3.91121141461462*^9, 
+  3.911211417046893*^9}, {3.9112114534729013`*^9, 3.9112115620365353`*^9}, {
+  3.911211599869067*^9, 3.9112118625295677`*^9}, {3.9112119882285337`*^9, 
+  3.9112119945687447`*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"64c76c13-5e7c-4de5-bbf2-355910ee30ad"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1974232246", ",", "928"}], "}"}]], "Output",
+ CellChangeTimes->{{3.911211765364279*^9, 3.911211818658697*^9}, {
+  3.911211850954783*^9, 3.9112118631079693`*^9}, {3.911211995138055*^9, 
+  3.911212023708582*^9}},
+ CellLabel->"Out[2]=",ExpressionUUID->"e82db329-f06a-4e9b-be65-1c41df9fa302"]
+}, Open  ]]
+},
+WindowSize->{1302, 200},
+WindowMargins->{{27, Automatic}, {Automatic, 450}},
+Magnification:>1.5 Inherited,
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (June 19, 2021)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"baf56028-9efc-40f6-8d17-35f420735000"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[558, 20, 584, 13, 46, "Input",ExpressionUUID->"933247bb-594d-419d-8999-65dce089f4d6"],
+Cell[CellGroupData[{
+Cell[1167, 37, 805, 19, 46, "Input",ExpressionUUID->"64c76c13-5e7c-4de5-bbf2-355910ee30ad"],
+Cell[1975, 58, 328, 6, 52, "Output",ExpressionUUID->"e82db329-f06a-4e9b-be65-1c41df9fa302"]
+}, Open  ]]
+}
+]
+*)
+
