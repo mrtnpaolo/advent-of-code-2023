@@ -43,11 +43,13 @@ library
                       , Advent.Search
                       , Advent.Chinese
                       , Advent.List
+                      , Advent.Memo
     other-modules:      Advent.Deque
                       , Advent.PQueue
     build-depends:      base
                       , array
                       , containers
+                      , MemoTrie
     hs-source-dirs:     common
     default-language:   GHC2021
 
