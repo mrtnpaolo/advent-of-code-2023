@@ -19,21 +19,36 @@ import Control.Applicative
 
 main =
   do inp <- getInput parse 13
-     print (part1 inp)
-     print (part2 inp)
+     let reflections = map ref inp
+     print (part1 reflections)
+     print (part2 (zip reflections inp))
   where
-    parse = map lines . L.splitOn "\n\n"
+    parse = L.splitOn "\n\n"
 
--- wrong 23566 28139
-part1 xss = sum $ catMaybes [ ((100 *) <$> f xs) <|> f (L.transpose xs) | xs <- xss ]
+part1 = sum . map (\(r,c) -> r*100+c)
 
-f xs = listToMaybe
-  [ i
-  | let n = length xs
-  , i <- [1..n-1]
-  , let (a,b) = L.splitAt i xs
-  , (i >= n `div` 2 && b `L.isPrefixOf` reverse a) ||
-    (i <= n `div` 2 && (reverse a) `L.isPrefixOf` b)
+sym xss =
+  [ i | i <- [1   ..n2 ], let (l,r) = L.splitAt i xss, reverse l `L.isPrefixOf` r ] ++
+  [ i | i <- [n2+1..n-1], let (l,r) = L.splitAt i xss, r `L.isPrefixOf` reverse l ]
+  where
+    n = length xss; n2 = n `div` 2
+
+ref (lines -> xss) = (fromMaybe 0 $ listToMaybe (sym xss), fromMaybe 0 $ listToMaybe (sym (L.transpose xss)))
+
+part2 = part1 . map f
+
+f ((r,c),xss) = head
+  [ (fromMaybe 0 (listToMaybe r's),fromMaybe 0 (listToMaybe c's))
+  | xs <- map lines $ smudges xss
+  , let r's = filter (r /=) (sym xs)
+  , let c's = filter (c /=) (sym (L.transpose xs))
+  , not (null r's) || not (null c's)
   ]
 
-part2 = const ()
+smudges :: String -> [String]
+smudges = init . go
+  where
+    go [] = [[]]
+    go ('\n':xs) = map ('\n':) (go xs)
+    go (c@'.':xs) = ['#':xs] ++ map (c:) (go xs)
+    go (c@'#':xs) = ['.':xs] ++ map (c:) (go xs)
