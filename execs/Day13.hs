@@ -1,54 +1,24 @@
 module Main (main) where
 
-import Advent
-import Numeric
-import Data.Ix
-import Data.Ord
-import Data.Char
-import Data.Maybe
-import Data.Either
-import Data.List          qualified as L
-import Data.List.Split          qualified as L
-import Data.Set           qualified as S
-import Data.Map.Strict    qualified as M
-import Data.IntSet        qualified as IS
-import Data.IntMap.Strict qualified as IM
-import Data.Array.Unboxed qualified as A
-import Debug.Trace
-import Control.Applicative
+import Advent          (getInput)
+import Data.List       (transpose,inits,tails)
+import Data.List.Split (splitOn)
 
 main =
   do inp <- getInput parse 13
-     let reflections = map ref inp
-     print (part1 reflections)
-     print (part2 (zip reflections inp))
+     print (part1 inp)
+     print (part2 inp)
   where
-    parse = L.splitOn "\n\n"
+    parse = map lines . splitOn "\n\n"
 
-part1 = sum . map (\(r,c) -> r*100+c)
+part1 = sum . map (summary 0)
 
-sym xss =
-  [ i | i <- [1   ..n2 ], let (l,r) = L.splitAt i xss, reverse l `L.isPrefixOf` r ] ++
-  [ i | i <- [n2+1..n-1], let (l,r) = L.splitAt i xss, r `L.isPrefixOf` reverse l ]
-  where
-    n = length xss; n2 = n `div` 2
+part2 = sum . map (summary 1)
 
-ref (lines -> xss) = (fromMaybe 0 $ listToMaybe (sym xss), fromMaybe 0 $ listToMaybe (sym (L.transpose xss)))
+summary n xs = sum (map (100*) (refls n xs) ++ refls n (transpose xs))
 
-part2 = part1 . map f
+refls n xs = [ i | (i,l,r) <- init (tail (zip3 [0..] (inits xs) (tails xs)))
+                 , n == sum (zipWith δ (reverse l) r) ]
 
-f ((r,c),xss) = head
-  [ (fromMaybe 0 (listToMaybe r's),fromMaybe 0 (listToMaybe c's))
-  | xs <- map lines $ smudges xss
-  , let r's = filter (r /=) (sym xs)
-  , let c's = filter (c /=) (sym (L.transpose xs))
-  , not (null r's) || not (null c's)
-  ]
+δ xs ys = sum (zipWith (\cases a b | a == b -> 0 | otherwise -> 1) xs ys)
 
-smudges :: String -> [String]
-smudges = init . go
-  where
-    go [] = [[]]
-    go ('\n':xs) = map ('\n':) (go xs)
-    go (c@'.':xs) = ['#':xs] ++ map (c:) (go xs)
-    go (c@'#':xs) = ['.':xs] ++ map (c:) (go xs)
