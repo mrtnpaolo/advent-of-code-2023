@@ -8,6 +8,7 @@ import Data.Char
 import Data.Maybe
 import Data.Either
 import Data.List          qualified as L
+import Data.List.Split    qualified as L
 import Data.Set           qualified as S
 import Data.Map.Strict    qualified as M
 import Data.IntSet        qualified as IS
