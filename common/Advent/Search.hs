@@ -1,7 +1,8 @@
 module Advent.Search
   ( dfs, dfsOn
   , bfs, bfsOn
-  , astar, astarOn
+  , AStep(..)
+  , astar, astarN, astarOn, astarOnN
   ) where
 
 import Advent.Deque  qualified as D
@@ -72,20 +73,49 @@ bfsOnInt repr next starts = loop IS.empty (D.fromList starts)
         seen' = IS.insert r seen
         nexts = next x
 
+astar :: Ord a => (a -> [AStep a]) -> a -> [(a,Int)]
+astar = astarOn id
 {-# INLINE astar #-}
-astar :: Ord a => (a -> [(a,Int,Int)]) -> a -> [(a,Int)]
-astar next start = astarOn id next start
 
-{-# INLINE astarOn #-}
-astarOn :: Ord r => (a -> r) -> (a -> [(a,Int,Int)]) -> a -> [(a,Int)]
-astarOn repr next start = loop S.empty (PQ.singleton 0 (0,start))
+astarN :: Ord a => (a -> [AStep a]) -> [a] -> [(a,Int)]
+astarN = astarOnN id
+{-# INLINE astarN #-}
+
+astarOn ::
+  Ord b =>
+  (a -> b)         {- ^ state characterization                                   -} ->
+  (a -> [AStep a]) {- ^ step function (new state, step cost, distance heuristic) -} ->
+  a                {- ^ starting state                                           -} ->
+  [(a,Int)]        {- ^ list of states visited                                   -}
+astarOn rep nexts start = astarOnN rep nexts [start]
+
+astarOnN ::
+  Ord b =>
+  (a -> b)         {- ^ state characterization                                   -} ->
+  (a -> [AStep a]) {- ^ step function (new state, step cost, distance heuristic) -} ->
+  [a]              {- ^ starting states                                          -} ->
+  [(a,Int)]        {- ^ list of states visited                                   -}
+astarOnN rep nexts starts = go S.empty (PQ.fromList [(0, WC 0 s) | s <- starts])
   where
-    loop _    PQ.Empty               = []
-    loop seen ((cost,x) PQ.:<| rest)
-      | r `S.member` seen = loop seen rest
-      | otherwise         = (x,cost) : loop seen' rest'
-      where
-        r = repr x
-        seen' = S.insert r seen
-        rest' = foldl' (\q (p,v) -> PQ.insert p v q) rest nexts
-        nexts = [ (cost + y_cost + y_dist,(cost + y_cost,y)) | (y,y_cost,y_dist) <- next x ]
+    go !seen = \case
+      PQ.Empty -> []
+      WC cost x PQ.:<| work
+        | S.member r seen -> go seen work
+        | otherwise         -> (x,cost) : go seen' work'
+        where
+          r     = rep x
+          seen' = S.insert r seen
+          work' = foldl' addWork work (nexts x)
+          addWork w (AStep x' stepcost heuristic) =
+            PQ.insert (cost' + heuristic) (WC cost' x') w
+            where
+              cost' = cost + stepcost
+{-# INLINE astarOn #-}
+
+data WithCost a = WC !Int a
+
+data AStep a = AStep {
+  astepNext      :: a,    -- ^ successor node
+  astepCost      :: !Int, -- ^ cost of edge
+  astepHeuristic :: !Int  -- ^ heuristic cost to goal from this new node
+  } deriving Show
