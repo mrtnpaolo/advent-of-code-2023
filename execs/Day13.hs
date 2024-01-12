@@ -15,10 +15,9 @@ part1 = sum . map (summary 0)
 
 part2 = sum . map (summary 1)
 
-summary n xs = sum (map (100*) (refls n xs) ++ refls n (transpose xs))
+summary n xs = sum (refls n (transpose xs) ++ map (100 *) (refls n xs))
 
-refls n xs = [ i | (i,l,r) <- init (tail (zip3 [0..] (inits xs) (tails xs)))
-                 , n == sum (zipWith δ (reverse l) r) ]
+refls n xs = [ i | (i,l,r) <- init . tail $ zip3 [0..] (inits xs) (tails xs)
+                 , sum (zipWith δ (reverse l) r) == n ]
 
 δ xs ys = sum (zipWith (\cases a b | a == b -> 0 | otherwise -> 1) xs ys)
-
