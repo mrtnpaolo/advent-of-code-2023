@@ -20,6 +20,8 @@ import Debug.Trace
 r = read @Int
 cut = L.splitOn
 
+type Part = [Int]
+
 main =
   do inp <- getInput (parse . map clean) 19
      print (part1 inp)
@@ -37,15 +39,20 @@ main =
 
     workflow = (\[name,cut "," -> rules] -> (name,chain rules)) . words
       where
-        chain :: [String] -> ([Int] -> String)
+        chain :: [String] -> (Part -> String)
         chain rs p = let Left lbl = foldr1 (>=>) (map lift rs) p in lbl
 
-        lift lbl@(cut ":" -> rule)
-          | [(l:'<':(r -> n)),next] <- rule = \cases t | p l t < n -> Left next; t -> Right t
-          | [(l:'>':(r -> n)),next] <- rule = \cases t | p l t > n -> Left next; t -> Right t
-          | otherwise                       = \_ -> Left lbl
+        lift :: String -> (Part -> Either String Part)
+        lift lbl@(cut ":" -> rule) part
+          | [l:'<':(r -> n),next] <- rule, part `at` l < n = Left next
+          | [l:'>':(r -> n),next] <- rule, part `at` l > n = Left next
+          | ':' `notElem` lbl                              = Left lbl
+          | otherwise                                      = Right part
 
-        p 'x' [x,_,_,_] = x; p 'm' [_,m,_,_] = m; p 'a' [_,_,a,_] = a; p 's' [_,_,_,s] = s
+        [x,_,_,_] `at` 'x' = x
+        [_,m,_,_] `at` 'm' = m
+        [_,_,a,_] `at` 'a' = a
+        [_,_,_,s] `at` 's' = s
 
     part (L.splitWhen (`elem` " =,") -> ["","x",r->x,"m",r->m,"a",r->a,"s",r->s,""]) = [x,m,a,s]
 
