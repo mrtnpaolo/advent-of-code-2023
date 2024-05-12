@@ -18,6 +18,7 @@ import Control.Monad
 import Debug.Trace
 
 r = read @Int
+cut = L.splitOn
 
 main =
   do inp <- getInput (parse . map clean) 19
@@ -25,34 +26,29 @@ main =
      print (part2 inp)
   where
     clean c | c `elem` "{}" = ' ' | otherwise = c
-    parse (L.splitOn "\n\n" -> [compose . map workflow . lines -> ws, map part . lines -> ps]) = (ws,ps)
-    workflow = (\[name,L.splitOn "," -> rules] -> (name,f $ map xmas rules)) . words
-    part (L.splitWhen (`elem` " =,") -> ["","x",r->x,"m",r->m,"a",r->a,"s",r->s,""]) = (x,m,a,s)
 
-xmas xs
-  | [cut "<" -> [l,r -> n],next] <- cut ":" xs = \t -> if p l t < n then Left next else Right t
-  | [cut ">" -> [l,r -> n],next] <- cut ":" xs = \t -> if p l t > n then Left next else Right t
-  where
-    cut = L.splitOn
-xmas xs  = const (Left xs)
+    parse (cut "\n\n" -> [workflows . lines -> ws, map part . lines -> ps]) = (ws,ps)
 
-f = ((\(Left xs) -> xs) .) . foldr1 (>=>)
+    workflows (M.fromList . map workflow -> m) p = go "in"
+      where
+        go "A" = True
+        go "R" = False
+        go lbl = go ((m M.! lbl) p)
 
-compose ws t = go "in"
-  where
-    go xs = case (m M.! xs) t of "A" -> Just t; "R" -> Nothing; next -> go next
-    m = M.fromList ws
+    workflow = (\[name,cut "," -> rules] -> (name,chain rules)) . words
+      where
+        chain :: [String] -> ([Int] -> String)
+        chain rs p = let Left lbl = foldr1 (>=>) (map lift rs) p in lbl
 
-p "x" = x
-p "m" = m
-p "a" = a
-p "s" = s
+        lift lbl@(cut ":" -> rule)
+          | [(l:'<':(r -> n)),next] <- rule = \cases t | p l t < n -> Left next; t -> Right t
+          | [(l:'>':(r -> n)),next] <- rule = \cases t | p l t > n -> Left next; t -> Right t
+          | otherwise                       = \_ -> Left lbl
 
-x (x_,_,_,_) = x_
-m (_,m_,_,_) = m_
-a (_,_,a_,_) = a_
-s (_,_,_,s_) = s_
+        p 'x' [x,_,_,_] = x; p 'm' [_,m,_,_] = m; p 'a' [_,_,a,_] = a; p 's' [_,_,_,s] = s
 
-part1 (ws,ps) = sum [ x+m+a+s | (x,m,a,s) <- mapMaybe ws ps ]
+    part (L.splitWhen (`elem` " =,") -> ["","x",r->x,"m",r->m,"a",r->a,"s",r->s,""]) = [x,m,a,s]
+
+part1 (flows,parts) = sum (sum <$> filter flows parts)
 
 part2 = const ()
