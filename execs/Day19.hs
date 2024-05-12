@@ -14,13 +14,10 @@ import Data.Map.Strict    qualified as M
 import Data.IntSet        qualified as IS
 import Data.IntMap.Strict qualified as IM
 import Data.Array.Unboxed qualified as A
-import Control.Monad
 import Debug.Trace
 
 r = read @Int
 cut = L.splitOn
-
-type Part = [Int]
 
 main =
   do inp <- getInput (parse . map clean) 19
@@ -31,23 +28,19 @@ main =
 
     parse (cut "\n\n" -> [workflows . lines -> ws, map part . lines -> ps]) = (ws,ps)
 
-    workflows (M.fromList . map workflow -> m) p = go "in"
+    workflows (M.fromList . map (workflow . words) -> m) part = go "in"
       where
         go "A" = True
         go "R" = False
-        go lbl = go ((m M.! lbl) p)
+        go lbl = go ((m M.! lbl) part)
 
-    workflow = (\[name,cut "," -> rules] -> (name,chain rules)) . words
+    workflow = (\[name,cut "," -> rules] -> (name,foldr check (error "not found") rules))
       where
-        chain :: [String] -> (Part -> String)
-        chain rs p = let Left lbl = foldr1 (>=>) (map lift rs) p in lbl
-
-        lift :: String -> (Part -> Either String Part)
-        lift lbl@(cut ":" -> rule) part
-          | [l:'<':(r -> n),next] <- rule, part `at` l < n = Left next
-          | [l:'>':(r -> n),next] <- rule, part `at` l > n = Left next
-          | ':' `notElem` lbl                              = Left lbl
-          | otherwise                                      = Right part
+        check lbl@(cut ":" -> rule) another part
+          | [l:'<':(r -> n),next] <- rule, part `at` l < n = next
+          | [l:'>':(r -> n),next] <- rule, part `at` l > n = next
+          | ':' `notElem` lbl                              = lbl
+          | otherwise                                      = another part
 
         [x,_,_,_] `at` 'x' = x
         [_,m,_,_] `at` 'm' = m
